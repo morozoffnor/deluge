@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type delugeReq struct {
@@ -81,6 +82,12 @@ func (d *DelugeClient) call(method string, params []interface{}) (*delugeResp, e
 }
 
 func (d *DelugeClient) AddTorrentMagnet(magnetURI string, opts TorrentOptions) (string, error) {
+	if magnetURI == "" {
+		return "", fmt.Errorf("magnetURI cannot be empty")
+	}
+	if strings.HasPrefix(magnetURI, "magnet:") == false {
+		return "", fmt.Errorf("magnetURI must start with 'magnet:'")
+	}
 	resp, err := d.call("core.add_torrent_magnet", []interface{}{magnetURI, opts.ToMap()})
 	if err != nil {
 		return "", err
